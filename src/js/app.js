@@ -3,7 +3,8 @@ import {Game} from './model/Game';
 
 //name of the player
 let name = "";
-const game = new Game(2, 3);
+let color = "";
+const game = new Game(5, 5);
 const buttonPlayButton = "playButton";
 const addPlayerButton = "addPlayer";
 
@@ -15,26 +16,25 @@ const addEvents = () => {
 const setupGame = () => {
 	game.setupGame();
 	game.setCases();
+	game.createEventClickCases();
 	game.initPlayersPositions();
 	game.setCaseTrap();
 	game.renderPlayerStats();
-	game.setIsStartedGame(true);
 };
 
 const setName = () => {
-
+	color = document.querySelector('input[name="color"]:checked').value;
 	name = document.getElementById('name').value;
 	document.getElementById('name').value = '';
 
 	if ('' !== name) {
-		const player = new Person(name);
+		const player = new Person(name, color);
 		game.addPlayer(player);
 	}
 };
 
 const init = () => {
 	addEvents();
-	setName();
 };
 
 init();

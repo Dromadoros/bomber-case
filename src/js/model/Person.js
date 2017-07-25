@@ -1,11 +1,12 @@
 class Person {
 
-	constructor(name) {
+	constructor(name, color) {
 		this.name = name;
+		this.color = color;
 		this.hp = 3;
 		this.x = 0;
 		this.y = 0;
-		this.id = '';
+		this.caseId = '';
 	}
 
 	setPosition(x, y = 0) {
@@ -29,16 +30,20 @@ class Person {
 		return this.hp;
 	}
 
-	setId(id){
-		this.id = id;
+	setCaseId(id){
+		this.caseId = id;
 	}
 
-	getId(){
-		return this.id;
+	getCaseId(){
+		return this.caseId;
 	}
 
 	setHp(hp) {
 		this.hp = hp;
+	}
+
+	getColor(){
+		return this.color;
 	}
 }
 export {Person}

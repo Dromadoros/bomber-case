@@ -18,10 +18,6 @@ class Case {
 		this.caseElement = document.querySelectorAll("[data-id='" + this.id + "']")[0];
 	}
 
-	getCaseElement() {
-		return this.caseElement;
-	}
-
 	getPositionX() {
 		return this.x;
 	}
@@ -44,18 +40,9 @@ class Case {
 
 	setIsTrap(value) {
 		this.isTrap = value;
-		if (value) {
-			this.link = this.links[(Math.floor(Math.random() * this.links.length))];
-			this.caseElement.addEventListener('click', function () {
-				const win = window.open('https://www.google.be/?q=' + this.link, '_blank');
-				win.focus();
-			});
-		} else {
-			this.link = '';
-		}
 	}
 
-	getIsTrap(value) {
+	getIsTrap(){
 		return this.isTrap;
 	}
 }

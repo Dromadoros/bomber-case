@@ -14,8 +14,8 @@ body{
 }
 
 #map{
-  width: 100%;
-  display: flex;
+  width: 600px;
+  display: block;
   margin: auto;
   flex-wrap: wrap;
 }
@@ -31,6 +31,22 @@ body{
   background-repeat: no-repeat;
 }
 
-.case .player{
+.case.player{
+  transition: all ease-in 0.2s;
+}
+
+.green{
+  background: green;
+}
+
+.blue{
+  background: blue;
+}
+
+.black{
+  background: black;
+}
+
+.red{
   background: red;
 }
