@@ -6,16 +6,10 @@ class Case {
 		this.isExplosed = false;
 		this.isTrap = false;
 		this.id = '';
-		this.links = [
-			'pmi science', 'sextoy', '2 girls 1 cup', 'gay', 'Why i\'m a looser'
-		];
-		this.link = '';
-		this.caseElement = '';
 	}
 
 	setup(id) {
 		this.id = id;
-		this.caseElement = document.querySelectorAll("[data-id='" + this.id + "']")[0];
 	}
 
 	getPositionX() {

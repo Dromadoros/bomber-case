@@ -13,15 +13,6 @@ class Game {
 	}
 
 	/**
-	 * Add new player to list
-	 *
-	 * @param player
-	 */
-	addPlayer(player) {
-		this.players.push(player);
-	}
-
-	/**
 	 * Hide the intro container and create map element
 	 */
 	setupGame() {
@@ -29,6 +20,15 @@ class Game {
 		intro.style.display = 'none';
 
 		document.getElementById('game').innerHTML = this.createMapElement();
+	}
+
+	/**
+	 * Add new player to list
+	 *
+	 * @param player
+	 */
+	addPlayer(player) {
+		this.players.push(player);
 	}
 
 	/**
@@ -67,11 +67,21 @@ class Game {
 
 	/**
 	 * Create cases in dom with id as attribute
+	 *
 	 * @param id
 	 * @returns {string}
 	 */
 	createCaseElement(id) {
-		return '<div class="case" data-id="' + id + '"></div>'
+		return '<div class="case" data-id="' + id + '">' + this.getCaseById(id).getPositionX() + ' | ' + this.getCaseById(id).getPositionY() + '</div>'
+	}
+
+	/**
+	 * Return div element for map
+	 *
+	 * @returns {string}
+	 */
+	createMapElement() {
+		return "<div id='map'></div>";
 	}
 
 	/**
@@ -85,7 +95,8 @@ class Game {
 		game.insertAdjacentHTML("beforeend", "<div class='score'><h1>Stats of players</h1></div>");
 		const score = document.getElementsByClassName('score')[0];
 		for (let i in this.players) {
-			score.innerHTML = score.innerHTML + this.players[i].getName() + ' | ' + this.players[i].getHp() + 'hp <br>';
+			score.innerHTML = score.innerHTML + '<span class="color ' + this.players[i].getColor() + '"></span><p>'
+				+ this.players[i].getName() + ' | ' + this.players[i].getHp() + 'hp </p><br>';
 		}
 	}
 
@@ -95,51 +106,76 @@ class Game {
 	initPlayersPositions() {
 		for (let i = 0; i < this.players.length; i++) {
 			let x = "";
-			if(0 === i%2){
+			if (0 === i % 2) {
 				x = i;
-			}else{
-				x = this.x	 - i;
+			} else {
+				x = this.x - i;
 			}
 			console.log(x);
 			this.players[i].setPosition(x);
 			this.players[i].setCaseId(x);
-			document.querySelector('[data-id="' + x + '"]').className += ' player '+ this.players[i].color;
+			document.querySelector('[data-id="' + x + '"]').className += ' player ' + this.players[i].color;
 		}
 	}
 
 	/**
+	 * Checking if case is next to player
+	 *
 	 * Move player to a case and check if it's trap. If so, explosion.
+	 * Change to next player
 	 *
 	 * @param e
 	 */
 	movePlayer(e) {
 		const currentCaseDom = e.target;
 		const currentCase = this.getCaseById(e.target.getAttribute('data-id'));
+		const oldCase = document.querySelector("[data-id='" + this.players[this.currentPlayer].getCaseId() + "']");
+		const oldCaseObject = this.getCaseById(oldCase.getAttribute('data-id'));
 
-		//todo : check if case is near to player
+		//Check if case is just next to player
+		if ((oldCaseObject.getPositionX() + 1 == currentCase.getPositionX() && oldCaseObject.getPositionY() == currentCase.getPositionY() ) ||
+			(oldCaseObject.getPositionX() - 1 == currentCase.getPositionX() && oldCaseObject.getPositionY() == currentCase.getPositionY()) ||
+			(oldCaseObject.getPositionX() == currentCase.getPositionX() && oldCaseObject.getPositionY() + 1 == currentCase.getPositionY()) ||
+			(oldCaseObject.getPositionX() == currentCase.getPositionX() && oldCaseObject.getPositionY() - 1 == currentCase.getPositionY())
+		) {
+			//todo hover case
+		} else {
+			return false;
+		}
 
+		//Check if a player is on the case
+		if (currentCaseDom.classList.contains('player')) {
+			return false;
+		}
+		console.log('ok');
+		//If case is trapped and not explosed yet, explosed and the player lose 1 hp
 		if (currentCase.getIsTrap() && !currentCase.getIsExplosed()) {
-			this.players[this.currentPlayer].setHp(this.players[0].getHp() - 1);
+			this.players[this.currentPlayer].setHp(this.players[this.currentPlayer].getHp() - 1);
 			currentCase.setIsExplosed(true);
 			console.log('Explosed');
 			if (0 === this.players[0].getHp()) {
 				alert('You\'re dead, try again.');
 			}
 		}
-		const oldCase = document.querySelector("[data-id='" + this.players[this.currentPlayer].getCaseId() + "']");
-		oldCase.className = 'case';
 
-		currentCaseDom.className += ' player '+ this.players[this.currentPlayer].color;
+		//Remove the player on the case; remove class and put it on the new case
+		oldCase.className = 'case';
+		currentCaseDom.className += ' player ' + this.players[this.currentPlayer].color;
 		this.players[this.currentPlayer].setPosition(currentCase.getPositionX(), currentCase.getPositionY());
 		this.players[this.currentPlayer].setCaseId(currentCaseDom.getAttribute('data-id'));
+
+		//Define the next player to play
+		this.changePlayer();
+		this.renderPlayerStats();
+	}
+
+	changePlayer() {
 		const nextIndexCurrent = this.currentPlayer + 1;
 		if (typeof this.players[nextIndexCurrent] == "undefined") {
 			this.currentPlayer = 0;
 		} else {
 			this.currentPlayer++;
 		}
-		console.log(this.currentPlayer);
-		this.renderPlayerStats();
 	}
 
 	/**
@@ -167,15 +203,6 @@ class Game {
 			tmp_cases.splice(rand, i);
 			i--;
 		}
-	}
-
-	/**
-	 * Return div element for map
-	 *
-	 * @returns {string}
-	 */
-	createMapElement() {
-		return "<div id='map'></div>";
 	}
 }
 
