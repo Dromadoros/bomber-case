@@ -2,14 +2,15 @@ import {Case} from './Case';
 
 class Game {
 
-	constructor(x = 5, y = 5, nbBombs = 3) {
+	constructor(x = 5, y = 5, nbBombs = 3, socket) {
 		this.x = x;
 		this.y = y;
+		this.nbBombs = Math.abs(nbBombs);
 		this.players = [];
 		this.cases = [];
 		this.mapId = 'map';
-		this.nbBombs = Math.abs(nbBombs);
 		this.currentPlayer = 0;
+		this.socket = socket;
 	}
 
 	/**
@@ -23,12 +24,21 @@ class Game {
 	}
 
 	/**
+	 *
+	 */
+	waitingAllPlayers(){
+		const intro = document.getElementById('intro');
+		intro.innerHTML = '<h1>Waiting for second player ...</h1>'
+	}
+
+	/**
 	 * Add new player to list
 	 *
 	 * @param player
 	 */
 	addPlayer(player) {
 		this.players.push(player);
+		console.log(this.players);
 	}
 
 	/**
@@ -72,7 +82,7 @@ class Game {
 	 * @returns {string}
 	 */
 	createCaseElement(id) {
-		return '<div class="case" data-id="' + id + '">' + this.getCaseById(id).getPositionX() + ' | ' + this.getCaseById(id).getPositionY() + '</div>'
+		return '<div class="case" data-id="' + id + '"></div>'
 	}
 
 	/**
@@ -95,6 +105,8 @@ class Game {
 		game.insertAdjacentHTML("beforeend", "<div class='score'><h1>Stats of players</h1></div>");
 		const score = document.getElementsByClassName('score')[0];
 		for (let i in this.players) {
+			console.log(this.players[i]);
+			console.log(this.players[i].getColor());
 			score.innerHTML = score.innerHTML + '<span class="color ' + this.players[i].getColor() + '"></span><p>'
 				+ this.players[i].getName() + ' | ' + this.players[i].getHp() + 'hp </p><br>';
 		}
@@ -111,7 +123,6 @@ class Game {
 			} else {
 				x = this.x - i;
 			}
-			console.log(x);
 			this.players[i].setPosition(x);
 			this.players[i].setCaseId(x);
 			document.querySelector('[data-id="' + x + '"]').className += ' player ' + this.players[i].color;
@@ -147,7 +158,6 @@ class Game {
 		if (currentCaseDom.classList.contains('player')) {
 			return false;
 		}
-		console.log('ok');
 		//If case is trapped and not explosed yet, explosed and the player lose 1 hp
 		if (currentCase.getIsTrap() && !currentCase.getIsExplosed()) {
 			this.players[this.currentPlayer].setHp(this.players[this.currentPlayer].getHp() - 1);

@@ -3,13 +3,11 @@ import {Game} from './model/Game';
 
 let name = "";
 let color = "";
-const game = new Game(5, 5);
-const buttonPlayButton = "playButton";
+const socket = io.connect('http://localhost:8082/');
+const game = new Game(5, 5, 3, socket);
 const addPlayerButton = "addPlayer";
-
 const addEvents = () => {
 	document.getElementById(addPlayerButton).addEventListener('click', setProperties);
-	document.getElementById(buttonPlayButton).addEventListener('click', setupGame);
 };
 
 const setupGame = () => {
@@ -22,9 +20,9 @@ const setupGame = () => {
 };
 
 const setProperties = () => {
-	if(document.querySelector('input[name="color"]:checked')){
+	if (document.querySelector('input[name="color"]:checked')) {
 		color = document.querySelector('input[name="color"]:checked').value;
-	}else{
+	} else {
 		return false;
 	}
 
@@ -32,10 +30,22 @@ const setProperties = () => {
 	document.getElementById('name').value = '';
 
 	if ('' !== name) {
-		const player = new Person(name, color);
-		game.addPlayer(player);
+		const player = {name, color};
+		socket.emit('addPlayer', player);
+		game.waitingAllPlayers();
 	}
 };
+
+socket.on('addPlayer', function (player) {
+	game.addPlayer(new Person(player.name, player.color));
+	game.renderPlayerStats();
+});
+
+socket.on('isPlayersReady', function (playersState) {
+	if (playersState.isReady) {
+		setupGame();
+	}
+});
 
 const init = () => {
 	addEvents();
