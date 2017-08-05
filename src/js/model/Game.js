@@ -24,6 +24,13 @@ class Game {
 	}
 
 	/**
+	 *  Update players list with socket
+	 */
+	updateGame(){
+
+	}
+
+	/**
 	 *
 	 */
 	waitingAllPlayers(){

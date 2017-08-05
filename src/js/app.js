@@ -4,7 +4,7 @@ import {Game} from './model/Game';
 let name = "";
 let color = "";
 const socket = io.connect('http://localhost:8082/');
-const game = new Game(5, 5, 3, socket);
+const game = new Game(10, 10, 6, socket);
 const addPlayerButton = "addPlayer";
 const addEvents = () => {
 	document.getElementById(addPlayerButton).addEventListener('click', setProperties);
@@ -41,10 +41,12 @@ socket.on('addPlayer', function (player) {
 	game.renderPlayerStats();
 });
 
-socket.on('isPlayersReady', function (playersState) {
-	if (playersState.isReady) {
-		setupGame();
-	}
+socket.on('someoneConnected', function(){
+	game.renderPlayerStats();
+});
+
+socket.on('isPlayersReady', function () {
+	setupGame();
 });
 
 const init = () => {
